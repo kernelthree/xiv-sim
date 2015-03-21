@@ -19,6 +19,7 @@ bool JITRotation::initializeWithFile(const char* filename) {
 		"class Actor;\n"
 		"uint64 AuraCount(const Actor* actor, uint64 identifier, const Actor* source);\n"
 		"double GlobalCooldownRemaining(const Actor* actor);\n"
+		"double AutoAttackDelayRemaining(const Actor* actor);\n"
 		"double CooldownRemaining(const Actor* actor, uint64 identifier);\n"
 		"double AuraTimeRemaining(const Actor* actor, uint64 identifier, const Actor* source);\n"
 		"Actor* Pet(Actor* owner);\n"
@@ -30,6 +31,7 @@ bool JITRotation::initializeWithFile(const char* filename) {
 		"uint8 IsReady(const Actor* actor, uint64 identifier);\n"
 		"void Command(Actor* actor, uint64 identifier);\n"
 		"void StopAutoAttack(Actor* actor);\n"
+		"void SetAutoAttackDelayRemainingOfInterest(Actor *actor, double timeOfInterest);\n"
 		"__end __hidden const uint64 NextAction(Actor* self, const Actor* target) {\n"
 	;
 	
@@ -127,6 +129,7 @@ bool JITRotation::initializeWithFile(const char* filename) {
 
 	engine->addGlobalMapping(module->getFunction("^AuraCount"), (void*)&JITRotation::ActorAuraCount);
 	engine->addGlobalMapping(module->getFunction("^GlobalCooldownRemaining"), (void*)&JITRotation::ActorGlobalCooldownRemaining);
+	engine->addGlobalMapping(module->getFunction("^AutoAttackDelayRemaining"), (void*)&JITRotation::ActorAutoAttackDelayRemaining);
 	engine->addGlobalMapping(module->getFunction("^CooldownRemaining"), (void*)&JITRotation::ActorCooldownRemaining);
 	engine->addGlobalMapping(module->getFunction("^AuraTimeRemaining"), (void*)&JITRotation::ActorAuraTimeRemaining);
 	engine->addGlobalMapping(module->getFunction("^Pet"), (void*)&JITRotation::ActorPet);
@@ -138,6 +141,7 @@ bool JITRotation::initializeWithFile(const char* filename) {
 	engine->addGlobalMapping(module->getFunction("^IsReady"), (void*)&JITRotation::ActionIsReady);
 	engine->addGlobalMapping(module->getFunction("^Command"), (void*)&JITRotation::ActorCommand);
 	engine->addGlobalMapping(module->getFunction("^StopAutoAttack"), (void*)&JITRotation::ActorStopAutoAttack);
+	engine->addGlobalMapping(module->getFunction("^SetAutoAttackDelayRemainingOfInterest"), (void*)&JITRotation::ActorSetAutoAttackDelayRemainingOfInterest);
 
 	_jitNextAction = decltype(_jitNextAction)((std::intptr_t)engine->getPointerToFunction(module->getFunction("^NextAction")));
 
@@ -155,6 +159,10 @@ uint64_t JITRotation::ActorAuraCount(const Actor* actor, uint64_t identifierHash
 
 double JITRotation::ActorGlobalCooldownRemaining(const Actor* actor) {
 	return std::chrono::duration<double>(actor->globalCooldownRemaining()).count();
+}
+
+double JITRotation::ActorAutoAttackDelayRemaining(const Actor *actor) {
+	return std::chrono::duration<double>(actor->autoAttackDelayRemaining()).count();
 }
 
 double JITRotation::ActorCooldownRemaining(const Actor* actor, uint64_t identifierHash) {
@@ -199,4 +207,9 @@ void JITRotation::ActorCommand(Actor* actor, uint64_t identifierHash) {
 
 void JITRotation::ActorStopAutoAttack(Actor* actor) {
 	actor->stopAutoAttack();
+}
+
+void JITRotation::ActorSetAutoAttackDelayRemainingOfInterest(Actor* actor, double timeOfInterest) {
+	std::chrono::microseconds t = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>(timeOfInterest));
+	actor->setAutoAttackDelayRemainingOfInterest(t);
 }

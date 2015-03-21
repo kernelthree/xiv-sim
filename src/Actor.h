@@ -125,6 +125,7 @@ class Actor {
 
 		bool isAutoAttacking() const { return _isAutoAttacking; }
 		void stopAutoAttack() { _isAutoAttacking = false; }
+		void setAutoAttackDelayRemainingOfInterest(const std::chrono::microseconds& time) { _autoAttackDelayRemainingOfInterest = time; }
 
 		std::chrono::microseconds autoAttackDelayRemaining() const;
 		std::chrono::microseconds globalCooldown() const;
@@ -170,7 +171,7 @@ class Actor {
 		const Configuration* const _configuration = nullptr;
 		const FNV1AHash _identifierHash;
 		std::mt19937* const _rng = nullptr;
-		
+
 		bool _isAutoAttacking = true;
 
 		Actor* _pet = nullptr;
@@ -189,6 +190,7 @@ class Actor {
 		std::chrono::microseconds _time = 0_us;
 		std::chrono::microseconds _globalCooldownStartTime = -1_min;
 		std::chrono::microseconds _lastAutoAttackTime = -1_min;
+		std::chrono::microseconds _autoAttackDelayRemainingOfInterest = -1_min;
 
 		const Action* _castAction = nullptr;
 		Actor* _castTarget = nullptr;

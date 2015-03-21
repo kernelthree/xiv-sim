@@ -1,4 +1,9 @@
+SetAutoAttackDelayRemainingOfInterest(self, 0.88);
+
 if (GlobalCooldownRemaining(self) > 1.0) {
+	if (IsReady(self, "barrage") and AutoAttackDelayRemaining(self) <= 0.88)
+		use "barrage";
+
 	if (IsReady(self, "bloodletter"))
 		use "bloodletter";
 
@@ -16,9 +21,6 @@ if (GlobalCooldownRemaining(self) > 1.0) {
 
 	if (IsReady(self, "internal-release"))
 		use "internal-release";
-
-	if (IsReady(self, "barrage"))
-		use "barrage";
 
 	if (IsReady(self, "hawks-eye"))
 		use "hawks-eye";

@@ -16,6 +16,7 @@ class JITRotation : public Rotation {
 		static uint64_t ActorAuraCount(const Actor* actor, uint64_t identifierHash, const Actor* source);
 		static double ActorCooldownRemaining(const Actor* actor, uint64_t identifierHash);
 		static double ActorGlobalCooldownRemaining(const Actor* actor);
+		static double ActorAutoAttackDelayRemaining(const Actor* actor);
 		static double ActorAuraTimeRemaining(const Actor* actor, uint64_t identifierHash, const Actor* source);
 		static Actor* ActorPet(Actor* actor);
 		static uint64_t ActorTP(const Actor* actor);
@@ -26,4 +27,5 @@ class JITRotation : public Rotation {
 		static uint8_t ActionIsReady(const Actor* actor, uint64_t identifierHash);
 		static void ActorCommand(Actor* actor, uint64_t identifierHash);
 		static void ActorStopAutoAttack(Actor* actor);
+		static void ActorSetAutoAttackDelayRemainingOfInterest(Actor* actor, double timeOfInterest);
 };

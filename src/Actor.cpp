@@ -231,7 +231,14 @@ std::chrono::microseconds Actor::timeUntilNextTimeOfInterest() const {
 	
 	if (isAutoAttacking()) {
 		auto aadel = autoAttackDelayRemaining();
-		if (aadel.count() && aadel < ret) { ret = aadel; }
+		auto aaNextTimeOfInterest = std::chrono::microseconds::max();
+		if (_autoAttackDelayRemainingOfInterest.count() && aadel > _autoAttackDelayRemainingOfInterest) {
+			aaNextTimeOfInterest = aadel - _autoAttackDelayRemainingOfInterest;
+		}
+		else {
+			aaNextTimeOfInterest = aadel;
+		}
+		if (aaNextTimeOfInterest.count() && aaNextTimeOfInterest < ret) { ret = aadel; }
 	}
 	
 	auto gcd = globalCooldownRemaining();
